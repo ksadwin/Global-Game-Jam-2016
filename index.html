@@ -74,6 +74,7 @@ function preload() {
     var nextScr = "home";
     var movingOn = false;
     var gameFin = false; //hypothetically can stop player from leaving a game until they've won it
+    var canGoBack = false;
     var couchStartX = 205;
     var couchEndX = 660;
     
@@ -128,29 +129,21 @@ function create() {
     valMusic = game.add.audio('vGame');
     
     drop = game.add.audio('drop');
-    drop.allowMultiple = false;
     drop.volume = .2;
     next = game.add.audio('next');
-    next.allowMultiple = false;
     fail = game.add.audio('fail');
-    fail.allowMultiple = false;
+    fail.volume = .2;
     phone = game.add.audio('phone');
-    phone.allowMultiple = false;
     pickup = game.add.audio('pickup');
-    pickup.allowMultiple = false;
     scream = game.add.audio('scream');
-    scream.allowMultiple = false;
+    scream.volume = .5;
     select = game.add.audio('select');
-    select.allowMultiple = false;
     text = game.add.audio('text');
-    text.allowMultiple = false;
+    text.volume = .1;
     creepy = game.add.audio('creepy');
-    creepy.allowMultiple = false;
     walk = game.add.audio('walk');
-    walk.allowMultiple = false;
     walk.volume = .2;
     danger = game.add.audio('danger');
-    danger.allowMultiple = false;
     
     game.sound.setDecodedCallback([ homeMusic, valMusic ], startMusic, this); //decodes the file, is a list of all audio assets to use
     
@@ -419,6 +412,17 @@ function create() {
             gameFin = false;
             officeDir.visible = false;
             //will let update draw the next screen
+            next.play();
+        }
+        if(sprite.x <= 0 && canGoBack) {
+            movingOn = true;
+            officeDir.visible = false;
+            nextScr = "homebg";
+            next.play();
+            sprite.x = game.width - sprite.width;
+            sprite.body.velocity.x = 0;
+            sprite.animations.stop();
+            sprite.frame = 0;
         }
         if (!walk.isPlaying) {
             walk.play();
@@ -428,7 +432,9 @@ function create() {
 function update() {
    
     cursors = game.input.keyboard.createCursorKeys();
-
+    if (player == placeholder) {
+        return;
+    }
     
     player.body.velocity.x = 0;
     if(cursors.left.isDown){
@@ -463,7 +469,9 @@ function update() {
             if(player.body.x < couchStartX || player.body.x + player.body.width > couchEndX){
             //fall off the couch if you go over the edgeeeee
                 player.body.gravity.y = 300;
-                drop.play();
+                if (!drop.isPlaying) {
+                    drop.play();
+                }
             }
         }
         gameFin = true; //a line for now that should really go away when we add psych dialogue
@@ -476,6 +484,7 @@ function update() {
                 classbg.visible = true;
                 player.body.x = 2;
                 movingOn = false;
+                canGoBack = false;
                 nextScr = "valOffice2";
                 valDir.visible = false;
                 valMusic.loopFull(0.6);
@@ -485,7 +494,9 @@ function update() {
                 cris.visible = true;
                 pat.visible = true;
                 eve.visible = true;
-                player = placeholder;
+                if (!canGoBack) {
+                    player = placeholder;
+                }
                 if(valPlayed){
                     val.visible = false;
                     afterV.visible = true;
@@ -508,7 +519,7 @@ function update() {
                 officebg.visible = false;
                 homebg.visible = true;
                 movingOn = false;
-                
+                canGoBack = false;
             }
 
             
@@ -524,6 +535,7 @@ function update() {
             cris.visible = true;
             player.x = 2;
             movingOn = false;
+            canGoBack = true;
             nextScr = "mall";
         }
         else if(nextScr == "valOffice1"){
@@ -534,6 +546,7 @@ function update() {
             val.visible = true;
             player.x = 2;
             movingOn = false;
+            canGoBack = true;
             nextScr = "class";
         }
         
@@ -545,6 +558,7 @@ function update() {
             pat.visible = true;
             player.x = 2;
             movingOn = false;
+            canGoBack = true;
             nextScr = "mall2";
         }
     
@@ -556,6 +570,7 @@ function update() {
             eve.visible = true;
             player.x = 2;
             movingOn = false;
+            canGoBack = true;
             nextScr = "party";
         }
         else if(nextScr == "valOffice2"){
@@ -665,10 +680,10 @@ function enemyFires () {
         var shooter=livingEnemies[random];
         // And fire the bullet from this enemy
         enemyBullet.reset(shooter.body.x, shooter.body.y);
-        // And make a sound!
-        drop.play();
-
+        
         game.physics.arcade.moveToObject(enemyBullet,player,120);
+        // And make a sound!
+        text.play();
         firingTimer = game.time.now + 2000;
     }
 
