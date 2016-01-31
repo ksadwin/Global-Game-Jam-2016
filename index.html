@@ -59,6 +59,12 @@ function preload() {
     game.load.image('baeAmmo', 'assets/img/heart.png');
     game.load.image('vAmmo', 'assets/img/chocolate.png');
     
+    //post-kid stuff!
+    game.load.image('afterV', 'assets/img/heart.png');
+    game.load.image('afterC', 'assets/img/milkncookies.png');
+    game.load.image('afterP', 'assets/img/4leaf.png');
+    game.load.image('afterE', );
+    
 
 }
     var homeMusic;
@@ -96,6 +102,12 @@ var stateText;
 var livingEnemies = [];
     
     
+    var valPlayed = false;
+    var crisPlayed = false;
+    var patPlayed = false;
+    var evePlayed = false;
+    
+    
 function create() {
     homeMusic = game.add.audio('home');
     valMusic = game.add.audio('vGame');
@@ -116,6 +128,8 @@ function create() {
     pat = game.add.sprite(450, game.world.height-420, 'pat', 0); 
     val = game.add.sprite(330, game.world.height-430, 'val', 0);
     cris = game.add.sprite(226, game.world.height - 410, 'cris', 0);
+    
+    afterV = 
     
         
     cname = game.add.text(226, game.world.height-480,'cris', {fontSize: '30px', fill: '#eee', font:'Titillium Web'});
