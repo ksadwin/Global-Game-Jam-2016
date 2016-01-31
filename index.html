@@ -258,6 +258,20 @@ function create() {
     valDir.visible = false;
     
     
+    valOff1 = game.add.text(80, game.world.height-100,'Hello, Val. I hear you’re having some trouble with a repressed', {fontSize: '22px', fill: '#ee3', font:'Titillium Web'});
+    valOff1a = game.add.text(80, game.world.height-80,'childhood memory. Let’s revisit that time and figure out what we can…',{fontSize: '22px', fill: '#ee3', font:'Titillium Web'});
+    valOff1.visible = false;
+    valOff1a.visible = false;
+    valOff2 = game.add.text(80, game.world.height - 165, 'I believe what you were experiencing was actually just the celebration ', {fontSize: '22px', fill: '#ee3', font:'Titillium Web'});
+    valOff2a = game.add.text(80,game.world.height - 140, 'of Valentine\'s Day. That happens every year, so you’d better get used to it.', {fontSize: '22px', fill: '#ee3', font:'Titillium Web'});
+    valOff2b = game.add.text(80,game.world.height - 115, 'It seems like you were uncomfortable being forced into romantic', {fontSize: '22px', fill: '#ee3', font:'Titillium Web'});
+    valOff2c = game.add.text(80,game.world.height - 90, ' situations with boys. May I suggest being a lesbian instead?', {fontSize: '22px', fill: '#ee3', font:'Titillium Web'});
+    valOff2.visible = false;
+    valOff2a.visible = false;
+    valOff2b.visible = false;
+    valOff2c.visible = false;
+                            
+    
 //    scoreText = game.add.text(16,16,'score: 0', {fontSize: '32px', fill: '#000'});
       player = placeholder;
     
@@ -498,6 +512,10 @@ function update() {
                     player = placeholder;
                 }
                 if(valPlayed){
+                    valOff2.visible = false;
+                    valOff2a.visible = false;
+                    valOff2b.visible = false;
+                    valOff2c.visible = false;
                     val.visible = false;
                     afterV.visible = true;
                 }
@@ -548,6 +566,8 @@ function update() {
             movingOn = false;
             canGoBack = true;
             nextScr = "class";
+            valOff1.visible = true;
+            valOff1a.visible = true;
         }
         
         else if(nextScr == "patOffice1"){
@@ -583,11 +603,17 @@ function update() {
             player.x = 2;
             movingOn = false;
             nextScr = "homebg";
+            valOff2.visible = true;
+            valOff2a.visible = true;
+            valOff2b.visible = true;
+            valOff2c.visible = true;
         }
         
     }
     
     if(vGame){
+        valOff1.visible =false;
+        valOff1a.visible = false;
         movingOn = false;
         gameFin = false;
         baes.visible = true;
