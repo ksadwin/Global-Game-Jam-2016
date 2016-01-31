@@ -30,6 +30,7 @@ function preload() {
     game.load.spritesheet('eve', 'assets/img/eve5x.png', 70, 225);
     game.load.spritesheet('pat', 'assets/img/pat5x.png', 80, 250);
     game.load.spritesheet('val', 'assets/img/val5x.png', 80, 260);
+    game.load.spritesheet('ghost', 'assets/img/null.png', 2, 40);
     
     //audio loads
     game.load.audio('home', 'assets/audio/HH-title.wav');
@@ -59,6 +60,12 @@ function preload() {
     game.load.image('baeAmmo', 'assets/img/heart.png');
     game.load.image('vAmmo', 'assets/img/chocolate.png');
     
+    //post-kid stuff!
+    game.load.image('afterV', 'assets/img/heart.png');
+    game.load.image('afterC', 'assets/img/milkncookies.png');
+    game.load.image('afterP', 'assets/img/4leaf.png');
+    game.load.image('afterE', 'assets/img/balloon_purple.png');
+    
 
 }
     var homeMusic;
@@ -66,7 +73,7 @@ function preload() {
     var player;
     var nextScr = "home";
     var movingOn = false;
-    var gameFin = true; //hypothetically can stop player from leaving a game until they've won it
+    var gameFin = false; //hypothetically can stop player from leaving a game until they've won it
     var couchStartX = 205;
     var couchEndX = 660;
     
@@ -108,6 +115,12 @@ var enemyBullet;
 var firingTimer = 0;
 var stateText;
 var livingEnemies = [];
+    
+    
+    var valPlayed = false;
+    var crisPlayed = false;
+    var patPlayed = false;
+    var evePlayed = false;
     
     
 function create() {
@@ -156,7 +169,20 @@ function create() {
     pat = game.add.sprite(450, game.world.height-420, 'pat', 0); 
     val = game.add.sprite(330, game.world.height-430, 'val', 0);
     cris = game.add.sprite(226, game.world.height - 410, 'cris', 0);
+    placeholder = game.add.sprite(20, 0, 'ghost', 0);
     
+    
+    afterV = game.add.sprite(350, game.world.height - 330, 'afterV');
+    afterE = game.add.sprite(565, game.world.height - 330, 'afterE');
+    afterP = game.add.sprite(460, game.world.height - 330, 'afterP');
+    afterC = game.add.sprite(225, game.world.height - 350, 'afterC');
+    afterC.scale.setTo(2,2);
+    afterP.scale.setTo(1.8,1.8);
+    afterV.scale.setTo(3,3);
+    afterP.visible = false;
+    afterV.visible = false;
+    afterC.visible = false;
+    afterE.visible = false;
         
     cname = game.add.text(226, game.world.height-480,'cris', {fontSize: '30px', fill: '#eee', font:'Titillium Web'});
     vname = game.add.text(350, game.world.height-480, 'val', {fontSize: '30px', fill: '#eee', font:'Titillium Web'});
@@ -165,11 +191,21 @@ function create() {
     
    
     //setup things for each kid
-    // ****************** CRIS
+    // ****************** 
     game.physics.arcade.enable(cris);
     game.physics.arcade.enable(val);
     game.physics.arcade.enable(pat);
     game.physics.arcade.enable(eve);
+    game.physics.arcade.enable(placeholder);
+    
+    placeholder.body.bounce.y = 0.2;
+    placeholder.body.gravity.y = 0;
+    placeholder.body.collideWorldBounds = true;
+    placeholder.animations.add('left', [3,4], 15, true);
+    placeholder.animations.add('right', [0,1], 15, true);
+    placeholder.inputEnabled=true;
+    
+    
 
     cris.body.bounce.y = 0.2;
     cris.body.gravity.y = 0;
@@ -230,7 +266,7 @@ function create() {
     
     
 //    scoreText = game.add.text(16,16,'score: 0', {fontSize: '32px', fill: '#000'});
-      player = cris;
+      player = placeholder;
     
     
     
@@ -332,7 +368,9 @@ function create() {
         nextScr = "eveOffice1";
         initDir.visible = false;
         officeDir.visible = true;
+        gameFin = true;
     }
+    
     function patSelect(sprite, pointer){
         select.play();
         player = sprite;
@@ -344,6 +382,7 @@ function create() {
         nextScr = "patOffice1";
         initDir.visible = false;
         officeDir.visible = true;
+        gameFin = true;
     }
     function valSelect(sprite, pointer){
         select.play();
@@ -356,6 +395,7 @@ function create() {
         nextScr = "valOffice1";
         initDir.visible = false;
         officeDir.visible = true;
+        gameFin = true;
     }
     function crisSelect (sprite, pointer) { 
         select.play();
@@ -368,6 +408,7 @@ function create() {
         nextScr = "crisOffice1";
         initDir.visible = false;
         officeDir.visible = true;
+        gameFin = true;
     }
     function timeToMove(sprite){
         //called every time the player moves bc that's how we roll
@@ -425,7 +466,7 @@ function update() {
                 drop.play();
             }
         }
-        gameFin = true;
+        gameFin = true; //a line for now that should really go away when we add psych dialogue
         if(movingOn){
             
             if(nextScr == "class"){
@@ -439,6 +480,36 @@ function update() {
                 valDir.visible = false;
                 valMusic.loopFull(0.6);
             }
+            if(nextScr == "homebg"){
+                val.visible = true;
+                cris.visible = true;
+                pat.visible = true;
+                eve.visible = true;
+                player = placeholder;
+                if(valPlayed){
+                    val.visible = false;
+                    afterV.visible = true;
+                }
+                if(patPlayed){
+                    pat.visible = false;
+                    afterP.visible = true;
+                }
+                if(crisPlayed){
+                    cris.visible = false;
+                    afterC.visible = true;
+                }
+                if(evePlayed){
+                    eve.visible = false;
+                    afterE.visible = true;
+                }
+                if( evePlayed && crisPlayed && patPlayed && valPlayed){
+                    //you fixed all the broken children. yay.
+                }
+                officebg.visible = false;
+                homebg.visible = true;
+                movingOn = false;
+                
+            }
 
             
         }
@@ -447,22 +518,20 @@ function update() {
     if(movingOn){
         if (nextScr == "crisOffice1"){
             //change setting!!!!!
+            hideKids();
             officebg.visible = true;
             homebg.visible = false;
-            val.visible = false;
-            pat.visible = false;
-            eve.visible = false;
+            cris.visible = true;
             player.x = 2;
             movingOn = false;
             nextScr = "mall";
         }
         else if(nextScr == "valOffice1"){
             //change setting!!!!!
+            hideKids();
             officebg.visible = true;
             homebg.visible = false;
-            cris.visible = false;
-            pat.visible = false;
-            eve.visible = false;
+            val.visible = true;
             player.x = 2;
             movingOn = false;
             nextScr = "class";
@@ -470,11 +539,10 @@ function update() {
         
         else if(nextScr == "patOffice1"){
             //change setting!!!!!
+            hideKids();
             officebg.visible = true;
             homebg.visible = false;
-            cris.visible = false;
-            val.visible = false;
-            eve.visible = false;
+            pat.visible = true;
             player.x = 2;
             movingOn = false;
             nextScr = "mall2";
@@ -482,11 +550,10 @@ function update() {
     
         else if(nextScr == "eveOffice1"){
             //change setting!!!!!
+            hideKids();
             officebg.visible = true;
             homebg.visible = false;
-            cris.visible = false;
-            val.visible = false;
-            pat.visible = false;
+            eve.visible = true;
             player.x = 2;
             movingOn = false;
             nextScr = "party";
@@ -498,9 +565,6 @@ function update() {
             player.scale.setTo(1,1);
             officebg.visible = true;
             classbg.visible = false;
-            cris.visible = false;
-            pat.visible = false;
-            eve.visible = false;
             player.x = 2;
             movingOn = false;
             nextScr = "homebg";
@@ -509,6 +573,8 @@ function update() {
     }
     
     if(vGame){
+        movingOn = false;
+        gameFin = false;
         baes.visible = true;
         valDir.visible = true;
         player.scale.setTo(.7,.7);
@@ -563,6 +629,7 @@ function collisionHandler (bullet, bae) {
         gameFin = true;
         valDir.visible = false;
         vGame = false;
+        valPlayed = true;
     }
 
 }
@@ -636,6 +703,18 @@ function resetBullet (bullet) {
 }
 
     
+    function hideKids(){
+        cris.visible = false;
+        val.visible = false;
+        eve.visible = false;
+        pat.visible = false;
+        //it's a waste of code to do this individually every time tbh
+        afterC.visible = false;
+        afterV.visible = false;
+        afterE.visible = false;
+        afterP.visible = false;
+        
+    }
 
 function startMusic(){
         if(homebg.visible){
