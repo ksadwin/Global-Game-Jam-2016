@@ -47,7 +47,7 @@ function preload() {
     game.load.audio('scream', 'assets/audio/effect/scream.wav');
     game.load.audio('select', 'assets/audio/effect/select.wav');
     game.load.audio('text', 'assets/audio/effect/text.wav');
-    game.load.audio('creepy', 'assets/audio/effect/underlining-creepy.wav');
+    game.load.audio('creepy', 'assets/audio/effect/underlining_creepy.wav');
     game.load.audio('walk', 'assets/audio/effect/walking-and-land-on-ground.wav');
     game.load.audio('danger', 'assets/audio/effect/you are about to die.wav');
     
@@ -80,6 +80,20 @@ function preload() {
     var pname;
     var ename;
     
+    //effects
+    var drop;
+    var next;
+    var fail;
+    var phone;
+    var pickup;
+    var scream;
+    var select;
+    var text;
+    var creepy;
+    var walk;
+    var danger;
+    
+    
     
     //vars for Val's Game
     var player;
@@ -99,6 +113,32 @@ var livingEnemies = [];
 function create() {
     homeMusic = game.add.audio('home');
     valMusic = game.add.audio('vGame');
+    
+    drop = game.add.audio('drop');
+    drop.allowMultiple = false;
+    drop.volume = .2;
+    next = game.add.audio('next');
+    next.allowMultiple = false;
+    fail = game.add.audio('fail');
+    fail.allowMultiple = false;
+    phone = game.add.audio('phone');
+    phone.allowMultiple = false;
+    pickup = game.add.audio('pickup');
+    pickup.allowMultiple = false;
+    scream = game.add.audio('scream');
+    scream.allowMultiple = false;
+    select = game.add.audio('select');
+    select.allowMultiple = false;
+    text = game.add.audio('text');
+    text.allowMultiple = false;
+    creepy = game.add.audio('creepy');
+    creepy.allowMultiple = false;
+    walk = game.add.audio('walk');
+    walk.allowMultiple = false;
+    walk.volume = .2;
+    danger = game.add.audio('danger');
+    danger.allowMultiple = false;
+    
     game.sound.setDecodedCallback([ homeMusic, valMusic ], startMusic, this); //decodes the file, is a list of all audio assets to use
     
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -282,32 +322,48 @@ function create() {
     
     
     function eveSelect(sprite, pointer){
+        select.play();
         player = sprite;
         console.log("pat selected");
+        if (player.body.gravity.y == 0) {
+            drop.play();
+        }
         player.body.gravity.y = 300;
         nextScr = "eveOffice1";
         initDir.visible = false;
         officeDir.visible = true;
     }
     function patSelect(sprite, pointer){
+        select.play();
         player = sprite;
         console.log("pat selected");
+        if (player.body.gravity.y == 0) {
+            drop.play();
+        }
         player.body.gravity.y = 300;
         nextScr = "patOffice1";
         initDir.visible = false;
         officeDir.visible = true;
     }
     function valSelect(sprite, pointer){
+        select.play();
         player = sprite;
         console.log("val selected");
+        if (player.body.gravity.y == 0) {
+            drop.play();
+        }
         player.body.gravity.y = 300;
         nextScr = "valOffice1";
         initDir.visible = false;
         officeDir.visible = true;
     }
     function crisSelect (sprite, pointer) { 
+        select.play();
         player = sprite;
         console.log("cris selected");
+        if (player.body.gravity.y == 0) {
+            drop.play();
+        }
         player.body.gravity.y = 300;
         nextScr = "crisOffice1";
         initDir.visible = false;
@@ -315,6 +371,7 @@ function create() {
     }
     function timeToMove(sprite){
         //called every time the player moves bc that's how we roll
+        
         if(sprite.x + sprite.width >= game.width && gameFin){
             //can only move on if the character is @ the edge and you're done here
             movingOn = true;
@@ -322,7 +379,9 @@ function create() {
             officeDir.visible = false;
             //will let update draw the next screen
         }
-        
+        if (!walk.isPlaying) {
+            walk.play();
+        }
     }
     
 function update() {
@@ -363,6 +422,7 @@ function update() {
             if(player.body.x < couchStartX || player.body.x + player.body.width > couchEndX){
             //fall off the couch if you go over the edgeeeee
                 player.body.gravity.y = 300;
+                drop.play();
             }
         }
         gameFin = true;
@@ -495,6 +555,8 @@ function collisionHandler (bullet, bae) {
     bullet.kill();
     bae.kill();
 
+    // Destruction noises
+    fail.play();
 
     if (baes.countLiving() == 0)
     {
@@ -509,6 +571,8 @@ function enemyHitsPlayer (player,bullet) {
     
     bullet.kill();
     console.log("I've been hit!");
+    // Distress noises
+    scream.play();
 }
 
 function enemyFires () {
@@ -534,6 +598,8 @@ function enemyFires () {
         var shooter=livingEnemies[random];
         // And fire the bullet from this enemy
         enemyBullet.reset(shooter.body.x, shooter.body.y);
+        // And make a sound!
+        drop.play();
 
         game.physics.arcade.moveToObject(enemyBullet,player,120);
         firingTimer = game.time.now + 2000;
@@ -555,6 +621,8 @@ function fireBullet () {
             bullet.reset(player.x - 50, player.y + 8);
             bullet.body.velocity.y = -400;
             bulletTime = game.time.now + 200;
+            // And make a sound!
+            select.play();
         }
     }
 
